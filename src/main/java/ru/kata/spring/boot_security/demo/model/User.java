@@ -4,9 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.List;
-
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -23,22 +21,23 @@ public class User implements UserDetails {
     private int age;
     @Column(name = "password")
     private String password;
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
-
     }
 
-    public User(Long id, String name, String surname, int age, String password) {
+    public User(Long id, String name, String surname, int age, String password, Set<Role> roles) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.age = age;
         this.password = password;
+        this.roles = roles;
+
     }
 
     @Override
@@ -80,14 +79,6 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
     public Long getId() {
         return id;
     }
@@ -120,5 +111,18 @@ public class User implements UserDetails {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User other = (User) o;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
