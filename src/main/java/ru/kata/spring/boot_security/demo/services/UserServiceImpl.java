@@ -37,7 +37,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     @Transactional
     @Override
     public User addUsers(User user) {
